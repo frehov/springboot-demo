@@ -1,4 +1,4 @@
-package com.crappyengineering.springboot.configurationbinding;
+package com.crappyengineering.springboot.demo;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
