@@ -1,10 +1,12 @@
 package com.crappyengineering.springboot.demo.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -13,11 +15,13 @@ import javax.persistence.Table;
 public class Task {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "task_id")
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TaskList parentId;
+    @JoinColumn(name = "parent_id")
+    private Tasklist parentId;
 
     private String description;
 
@@ -26,17 +30,17 @@ public class Task {
     public Task() {
     }
 
-    public Task(TaskList parentId, String description, TaskStatus status) {
+    public Task(Tasklist parentId, String description, TaskStatus status) {
         this.parentId = parentId;
         this.description = description;
         this.status = status;
     }
 
-    public TaskList getParentId() {
+    public Tasklist getParentId() {
         return parentId;
     }
 
-    public void setParentId(TaskList parentId) {
+    public void setParentId(Tasklist parentId) {
         this.parentId = parentId;
     }
 
@@ -59,4 +63,14 @@ public class Task {
     public long getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                '}';
+    }
+
 }

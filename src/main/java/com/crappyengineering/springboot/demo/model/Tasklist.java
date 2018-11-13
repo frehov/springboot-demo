@@ -14,15 +14,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tasklist")
-public class TaskList {
+public class Tasklist {
 
-    @Id
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE
-    )
-    @Column(
-            name = "list_id"
-    )
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "list_id")
     private long id;
 
     @OneToMany(
@@ -37,10 +33,10 @@ public class TaskList {
 
     private String title;
 
-    public TaskList() {
+    public Tasklist() {
     }
 
-    public TaskList(String owner, String title) {
+    public Tasklist(String owner, String title) {
         this.owner = owner;
         this.title = title;
     }
@@ -63,5 +59,15 @@ public class TaskList {
 
     public long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Tasklist{" +
+                "id=" + id +
+                //", tasks=" + tasks +
+                ", owner='" + owner + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 }
