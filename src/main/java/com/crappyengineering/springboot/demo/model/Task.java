@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "task")
 public class Task {
@@ -19,9 +21,10 @@ public class Task {
     @Column(name = "task_id")
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
-    private Tasklist parentId;
+    @JsonIgnoreProperties({"tasks", "title", "owner"})
+    private Tasklist parent;
 
     private String description;
 
@@ -30,18 +33,18 @@ public class Task {
     public Task() {
     }
 
-    public Task(Tasklist parentId, String description, TaskStatus status) {
-        this.parentId = parentId;
+    public Task(Tasklist parent, String description, TaskStatus status) {
+        this.parent = parent;
         this.description = description;
         this.status = status;
     }
 
-    public Tasklist getParentId() {
-        return parentId;
+    public Tasklist getParent() {
+        return parent;
     }
 
-    public void setParentId(Tasklist parentId) {
-        this.parentId = parentId;
+    public void setParent(Tasklist parent) {
+        this.parent = parent;
     }
 
     public String getDescription() {

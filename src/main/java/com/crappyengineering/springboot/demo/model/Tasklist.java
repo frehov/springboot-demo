@@ -14,13 +14,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @Entity
 @Table(name = "tasklist")
 public class Tasklist {
 
-    @Id()
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "list_id")
     private long id;
@@ -28,10 +29,11 @@ public class Tasklist {
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true,
-            mappedBy = "parentId",
+            mappedBy = "parent",
             fetch = FetchType.LAZY
     )
     @JsonInclude(NON_EMPTY)
+    @JsonIgnoreProperties( {"parent"} )
     private List<Task> tasks;
 
     private String owner;

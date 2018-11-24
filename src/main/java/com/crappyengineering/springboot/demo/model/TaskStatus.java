@@ -1,7 +1,9 @@
 package com.crappyengineering.springboot.demo.model;
 
-public enum TaskStatus {
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 
+public enum TaskStatus {
+    @JsonEnumDefaultValue
     NOT_STARTED,
     IN_PROGRESS,
     COMPLETED;
