@@ -1,12 +1,12 @@
 package com.crappyengineering.springboot.demo.controller;
 
+import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
-import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import com.crappyengineering.springboot.demo.model.Task;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/task")
@@ -39,57 +38,48 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity getAllTasks() {
-        List<Task> tasks = taskRepository.findAll();
-
-        if (tasks.isEmpty()) {
-            return noContent().build();
-        }
-
-        return ok(tasks);
+        return Optional.of(taskRepository.findAll())
+                .filter(tasks -> !tasks.isEmpty())
+                .map(ResponseEntity::ok)
+                .orElseGet(noContent()::build);
     }
 
     @PostMapping
     public ResponseEntity createTask(@RequestBody Task task) {
-
-        logger.info("{}", task);
-
-        Task t = taskRepository.save(task);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(t.getId()).toUri();
-
-        return created(location).body(taskRepository.save(task));
+        return Optional.of(taskRepository.save(task))
+                .map(task1 -> fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(task1.getId())
+                        .toUri())
+                .map(uri -> created(uri).build())
+                .orElseGet(badRequest()::build);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity getTaskById(@PathVariable("id") long id) {
-        Optional<Task> task = taskRepository.findById(id);
-
-        if (!task.isPresent()) {
-            notFound();
-        }
-        return ok(task);
+        return taskRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(notFound()::build);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity updateTaskById(@PathVariable("id") long id, @RequestBody Task task) {
-        if (!taskRepository.existsById(id)) {
-            return notFound().build();
-        }
-
-        return ok(taskRepository.save(task));
+        return taskRepository.findById(id)
+                .map(task1 -> {
+                    taskRepository.save(task);
+                    return ok().build();
+                })
+                .orElseGet(notFound()::build);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteTaskById(@PathVariable("id") long id) {
-
-        if (!taskRepository.existsById(id)) {
-            return notFound().build();
-        }
-
-        taskRepository.deleteById(id);
-
-        return ok().build();
+        return taskRepository.findById(id)
+                .map(task1 -> {
+                    taskRepository.delete(task1);
+                    return ok().build();
+                })
+                .orElseGet(notFound()::build);
     }
 
 
